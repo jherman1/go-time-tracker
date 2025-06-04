@@ -30,3 +30,7 @@ func SaveTracker(t *Tracker) error {
 
 	return json.NewEncoder(f).Encode(t)
 }
+
+func DeleteTrackingFile() error {
+	return os.Remove(dataFile)
+}

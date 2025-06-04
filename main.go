@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"encoding/csv"
 	"fmt"
 	"go-time-tracker/tracker"
@@ -97,11 +98,32 @@ func main() {
 					task.Duration.String(),
 				})
 			}
-			fmt.Println("Exported full data to time-traacker-export.csv")
+			fmt.Println("Exported full data to time-tracker-export.csv")
 			return
 		}
 
 		fmt.Println("Please provide one of: -all or -condense")
+
+	case "clear":
+		reader := bufio.NewReader(os.Stdin)
+		fmt.Print("Are you sure you want to clear all tracking data? (y/N): ")
+		input, _ := reader.ReadString('\n')
+		input = strings.TrimSpace(strings.ToLower(input))
+
+		if input != "y" && input != "yes" {
+			fmt.Println("Aborted.")
+			return
+		}
+
+		t.ActiveTask = nil
+		t.History = nil
+
+		err := tracker.SaveTracker(t)
+		if err != nil {
+			fmt.Println("Failed to save tracker:", err)
+		} else {
+			fmt.Println("All tracking has been cleared")
+		}
 
 	default:
 		fmt.Println("Unko	wn command:", cmd)
