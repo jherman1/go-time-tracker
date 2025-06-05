@@ -8,6 +8,8 @@ import (
 	"os"
 	"strings"
 	"time"
+
+	"github.com/olekukonko/tablewriter"
 )
 
 func main() {
@@ -48,9 +50,27 @@ func main() {
 		t.ActiveTask = nil
 
 	case "log":
-		for _, task := range t.History {
-			fmt.Printf("%s - %s\n", task.Name, task.Duration)
+		// for _, task := range t.History {
+		// 	fmt.Printf("%s - %s\n", task.Name, task.Duration)
+		// }
+		if len(t.History) == 0 {
+			fmt.Println("No tasks tracked yet.")
+			return
 		}
+
+		table := tablewriter.NewWriter(os.Stdout)
+		table.SetHeader([]string{"Task", "Start", "End", "Duration"})
+
+		for _, task := range t.History {
+			table.Append([]string{
+				task.Name,
+				task.StartTime.Format("01-02-2006 03:04:05 PM"),
+				task.EndTime.Format("01-02-2006 03:04:05 PM"),
+				task.Duration.Truncate(time.Second).String(),
+			})
+		}
+
+		table.Render()
 
 	case "export":
 		exportAll := false
